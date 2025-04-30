@@ -1,0 +1,19 @@
+{
+	"exclude": ["node_modules", "dist", "src/**/*.test.ts"],
+	"include": ["src/**/*.ts"],
+	"compilerOptions": {
+		"types": ["node", "jest", "express"],
+		"target": "ESNext",
+		"module": "ESNext",
+		"rootDir": "./src",
+		"moduleResolution": "Node",
+		"typeRoots": ["./node_modules/@types"],
+		"sourceMap": true,
+		"outDir": "dist/",
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"strict": false,
+		"strictNullChecks": true,
+		"skipLibCheck": true
+	}
+}

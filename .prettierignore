@@ -1,0 +1,4 @@
+.pnpm
+dist
+node_modules
+.prettierrc
