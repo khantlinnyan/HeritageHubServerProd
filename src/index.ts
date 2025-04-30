@@ -1,4 +1,4 @@
-import express, { NextFunction } from 'express';
+import express from 'express';
 import 'dotenv/config';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
@@ -24,11 +24,8 @@ const limiter = rateLimit({
 	max: 200,
 	validate: { xForwardedForHeader: false }
 });
-app.use(limiter);
-
-const PORT = process.env.PORT;
-
 app.use('/api/v1', routes);
+app.use(limiter);
 app.use(errorHandler);
 
 // app.use("/doc", swaggerUi.serve, swaggerUi.setup(swaggerFile));
