@@ -1,5 +1,8 @@
 import { DataSource } from 'typeorm';
 import 'dotenv/config';
+import { User } from './entities/user.entitiy';
+import { Itinerary } from './entities/itinerary.entity';
+import { Place } from './entities/place.entity';
 
 // const isProduction = process.env.NODE_ENV === "production";
 const AppDataSource = new DataSource({
@@ -11,7 +14,7 @@ const AppDataSource = new DataSource({
 	database: process.env.PGDATABASE,
 	synchronize: true,
 	logging: false,
-	entities: [],
+	entities: [User, Itinerary, Place],
 	migrations: ['./src/migrations/*.ts']
 });
 

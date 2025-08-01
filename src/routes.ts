@@ -1,12 +1,6 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
+import planRoute from './features/plan/plan.route';
 const router = express.Router();
 
-router.use('/', (req: Request, res: Response) => {
-	res.status(200).json({
-		success: true,
-		message: 'Welcome to Revisewise API',
-		data: [],
-		status: 200
-	});
-});
+router.use('/plan', planRoute);
 export default router;

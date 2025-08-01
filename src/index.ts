@@ -25,7 +25,7 @@ const limiter = rateLimit({
 	validate: { xForwardedForHeader: false }
 });
 app.use('/api/v1', routes);
-app.use(limiter);
+// app.use(limiter);
 app.use(errorHandler);
 
 // app.use("/doc", swaggerUi.serve, swaggerUi.setup(swaggerFile));
