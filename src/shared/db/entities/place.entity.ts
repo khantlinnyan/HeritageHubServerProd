@@ -15,7 +15,7 @@ export class Place {
 	name: string;
 
 	@Column('jsonb', { nullable: true })
-	coordinates: { type: string; coordinates: [number, number] };
+	coordinates: { type: string; coordinates: [number] };
 
 	@Column({ type: 'text' })
 	description: string;
