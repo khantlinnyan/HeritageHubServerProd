@@ -7,18 +7,19 @@ import {
 	getItinerary,
 	getItineraryItem,
 	getItineraryByUserId,
-	getPlaces
+	getPlaces,
+	getPublicItineraries,
+	deleteItinerary
 } from './plan.service';
 import { responseFn } from '../../shared/common/responseFn';
+import { clerkClient, getAuth } from '@clerk/express';
 
 export async function createItineraryHandler(req: Request, res: Response, next: NextFunction) {
 	try {
 		const { preferences, userId } = req.body;
-		console.log('Received preferences:', preferences);
-		console.log('Received userId:', userId);
 
 		const itinerary = await createItinerary(preferences, userId);
-		console.log(itinerary);
+
 		responseFn(res, 200, 'Itinerary created successfully', itinerary);
 	} catch (error) {
 		next(error);
@@ -28,10 +29,11 @@ export async function createItineraryHandler(req: Request, res: Response, next: 
 export async function updateItineraryHandler(req: Request, res: Response) {
 	try {
 		const { id } = req.params;
-		const { items } = req.body;
-		const itinerary = await updateItinerary(id, items);
+		const { days, title, duration, isPublic } = req.body;
+
+		const itinerary = await updateItinerary(id, days, title, duration, isPublic);
 		responseFn(res, 200, 'Itinerary updated successfully', itinerary);
-	} catch (error) {
+	} catch (error: any) {
 		res.status(500).json({
 			success: false,
 			message: error.message,
@@ -75,7 +77,15 @@ export async function updateChecklistItemHandler(req: Request, res: Response) {
 export async function getItineraryHandler(req: Request, res: Response) {
 	try {
 		const { id } = req.params;
-		const itinerary = await getItinerary(id);
+		const authHeader = req.headers.authorization;
+
+		if (!authHeader || !authHeader.startsWith('Bearer ')) {
+			throw new Error('Authorization header missing or invalid');
+		}
+
+		const userId = authHeader.split(' ')[1];
+		if (!userId) throw new Error('User ID not found');
+		const itinerary = await getItinerary(id, userId);
 		responseFn(res, 200, 'Itinerary retrieved successfully', itinerary);
 	} catch (error) {
 		res.status(500).json({
@@ -126,9 +136,75 @@ export async function getItineraryItemHandler(req: Request, res: Response) {
 export async function getPlacesHandler(req: Request, res: Response) {
 	try {
 		const places = await getPlaces();
-		console.log(places);
 		responseFn(res, 200, 'Places retrieved successfully', places);
 	} catch (error) {
-		res.status(500).json({});
+		res.status(500).json({
+			success: false,
+			message: error.message,
+			data: null,
+			status: 500
+		});
+	}
+}
+
+export async function getPublicItinerariesHandler(req: Request, res: Response) {
+	const authHeader = req.headers.authorization;
+
+	if (!authHeader || !authHeader.startsWith('Bearer ')) {
+		throw new Error('Authorization header missing or invalid');
+	}
+
+	const userId = authHeader.split(' ')[1];
+	if (!userId) throw new Error('User ID not found');
+	try {
+		const publicItineraries = await getPublicItineraries(userId);
+		responseFn(res, 200, 'Public itineraries retrieved successfully', publicItineraries);
+	} catch (error) {
+		res.status(500).json({
+			success: false,
+			message: error.message,
+			data: null,
+			status: 500
+		});
+	}
+}
+
+export async function deleteItineraryHandler(req: Request, res: Response) {
+	try {
+		const { id } = req.params;
+		const authHeader = req.headers.authorization;
+
+		if (!authHeader || !authHeader.startsWith('Bearer ')) {
+			throw new Error('Authorization header missing or invalid');
+		}
+
+		const userId = authHeader.split(' ')[1];
+		if (!userId) throw new Error('User ID not found');
+		const itinerary = await deleteItinerary(id, userId);
+		responseFn(res, 200, 'Itinerary deleted successfully', itinerary);
+	} catch (error) {
+		res.status(500).json({
+			success: false,
+			message: error.message,
+			data: null,
+			status: 500
+		});
+	}
+}
+
+export async function updateItineraryVisibilityHandler(req: Request, res: Response) {
+	const { userId } = req.auth;
+
+	if (!userId) {
+		return null;
+	}
+
+	const user = await clerkClient.users.getUser(userId);
+	if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+	try {
+		const updatedItinerary = await updateItineraryVisibility(req.params.id, userId, req.body.isPublic);
+		res.status(200).json({ data: updatedItinerary });
+	} catch (error) {
+		res.status(400).json({ error: error.message });
 	}
 }

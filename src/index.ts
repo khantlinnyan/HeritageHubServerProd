@@ -5,6 +5,8 @@ import rateLimit from 'express-rate-limit';
 import errorHandler from './shared/common/error-handler';
 import routes from './routes';
 import AppDataSource from './shared/db/database';
+import { seedDatabase } from './utils/seeddb';
+import { clerkMiddleware } from '@clerk/express';
 const app = express();
 // const corsOptions = {
 // 	origin: ['http://localhost:5431', 'https://revisewise.vercel.app'],
@@ -17,6 +19,7 @@ app.use(cors({ credentials: true }));
 // app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
 // app.use(passport.initialize());
 
 const limiter = rateLimit({
@@ -24,8 +27,8 @@ const limiter = rateLimit({
 	max: 200,
 	validate: { xForwardedForHeader: false }
 });
+app.use(clerkMiddleware());
 app.use('/api/v1', routes);
-// app.use(limiter);
 app.use(errorHandler);
 
 // app.use("/doc", swaggerUi.serve, swaggerUi.setup(swaggerFile));
@@ -52,8 +55,9 @@ app.use(errorHandler);
 
 const startServer = async () => {
 	try {
-		await AppDataSource.initialize();
-		console.log('Database initialized!');
+		// await AppDataSource.initialize();
+		// console.log('Database initialized!');
+		await seedDatabase();
 		const port = process.env.PORT;
 		app.listen(port, () => {
 			console.log(`Server running on port ${port}`);
