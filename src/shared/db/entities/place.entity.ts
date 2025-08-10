@@ -14,12 +14,10 @@ export class Place {
 	@Column({ type: 'varchar', length: 255 })
 	name: string;
 
-	// We'll store the coordinates as a Point for spatial queries.
-	// The SRID 4326 is standard for latitude and longitude.
-	@Column('geography')
+	@Column('jsonb', { nullable: true })
 	coordinates: { type: string; coordinates: [number, number] };
 
-	@Column({ type: 'text' }) // Use 'text' for longer descriptions
+	@Column({ type: 'text' })
 	description: string;
 
 	@Column({ nullable: true, type: 'varchar' })
@@ -28,7 +26,7 @@ export class Place {
 	@Column({ type: 'varchar', nullable: true })
 	category: string;
 
-	// New columns from your dataset
+	// New columns from your datase
 	@Column({ type: 'varchar', nullable: true })
 	region: string;
 
