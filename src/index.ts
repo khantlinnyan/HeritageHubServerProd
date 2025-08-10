@@ -7,6 +7,7 @@ import routes from './routes';
 import AppDataSource from './shared/db/database';
 import { seedDatabase } from './utils/seeddb';
 import { clerkMiddleware } from '@clerk/express';
+import clerkRoute from './features/clerk/clerk.route';
 const app = express();
 // const corsOptions = {
 // 	origin: ['http://localhost:5431', 'https://revisewise.vercel.app'],
@@ -14,6 +15,7 @@ const app = express();
 // 	credentials: true
 // };
 
+app.use(clerkRoute);
 // app.options('*', cors(corsOptions));
 app.use(cors({ credentials: true }));
 // app.use(cookieParser());
