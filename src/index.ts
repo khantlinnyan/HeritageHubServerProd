@@ -4,10 +4,10 @@ import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import errorHandler from './shared/common/error-handler';
 import routes from './routes';
-import AppDataSource from './shared/db/database';
 import { seedDatabase } from './utils/seeddb';
 import { clerkMiddleware } from '@clerk/express';
 import clerkRoute from './features/clerk/clerk.route';
+import AppDataSource from './shared/db/database';
 const app = express();
 // const corsOptions = {
 // 	origin: ['http://localhost:5431', 'https://revisewise.vercel.app'],
@@ -57,9 +57,9 @@ app.use(errorHandler);
 
 const startServer = async () => {
 	try {
-		// await AppDataSource.initialize();
-		// console.log('Database initialized!');
-		await seedDatabase();
+		await AppDataSource.initialize();
+		console.log('Database initialized!');
+		// await seedDatabase();
 		const port = process.env.PORT;
 		app.listen(port, () => {
 			console.log(`Server running on port ${port}`);
